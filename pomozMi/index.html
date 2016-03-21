@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <script src="./assets/react.js"></script>
+  <script src="./assets/react-dom.js"></script>
+  <script src="./assets/browser.min.js"></script>
+<script>
+var nazov = "Darček pre kamaráta alebo kamarátku"
+
+var otazka1 =  {
+  id: 1,
+  otazka: "Komu kupuješ darček",
+  moznosti: [
+    {
+      moznost: "kamarát",
+      dalej: 2
+    },
+    {
+      moznost: "bratovi",
+      dalej: 4
+    }
+  ]
+  }
+  var otazka2 =  {
+    id: 2,
+    otazka: "Rád hra futbal",
+    moznosti: [
+      {
+        moznost: "áno",
+        dalej: 3
+      },
+      {
+        moznost: "nie",
+        odpoved: "Kúp mu autíčko"
+      }
+    ]
+    }
+
+    var otazka3 =  {
+      id: 3,
+      otazka: "Má rad Lionela Messiho",
+      moznosti: [
+        {
+          moznost: "áno",
+          odpoved: "Kúp mu tričko a pomocou fixiek na textil mu urob dres Messiho"
+        },
+        {
+          moznost: "nie",
+          odpoved: "Kúp mu futbalovú loptu"
+        }
+      ]
+      }
+
+
+   var otazka4 =  {
+    id: 4,
+    otazka: "Pozera  Pána Prsteňov",
+    moznosti: [
+      {
+        moznost: "áno",
+        dalej: 5
+       
+      },
+      {
+        moznost: "nie",
+        odpoved: "Kúp mu autíčko"
+      }
+    ]
+    }
+
+	
+    var otazka5 =  {
+      id: 5,
+      otazka: "poznas GIMLLIho",
+      moznosti: [
+        {
+          moznost: "áno",
+          odpoved: "Vidno ze pozná Pana Prsteňov"
+        },
+        {
+          moznost: "nie",
+          odpoved: "Kúp mu futbalovú loptu"
+        }
+      ]
+      }
+
+var databaza = [otazka1, otazka2, otazka3 ,otazka4, otazka5]
+
+</script>
+<link href="./assets/mui.min.css" rel="stylesheet" type="text/css" />
+<style>
+  body {
+    background-color: #eee;
+  }
+</style>
+</head>
+<body>
+  <div id="content"></div>
+   <script type="text/babel">
+   var Reccomend = React.createClass({
+     render: function() {
+       return(
+         <h2>{this.props.children}</h2>
+       )
+     }
+   })
+   var Answer = React.createClass({
+     click: function() {
+       var option = this.props.current
+
+       if(option.odpoved) {
+         this.props.reccomend(option.odpoved)
+       } else {
+         this.props.next(option.dalej)
+       }
+     },
+     render: function() {
+       return(
+         <button className="mui-btn mui-btn--primary" onClick={this.click}>{this.props.children}</button>
+       )
+     }
+   })
+
+
+   var QueryMe = React.createClass({
+     getInitialState: function() {
+       return {query: this.props.query, reccomend: null};
+     },
+     changeState: function(i) {
+       this.setState({query: i})
+     },
+
+     reccomendThis: function(text) {
+       this.setState({reccomend: text})
+     },
+
+     render: function() {
+       var otazka = null;
+       var data = this.props.databaza;
+       for(var i = 0; i< data.length; i++) {
+         if (this.state.query == data[i].id){
+           otazka = data[i]
+         }
+       }
+       if (otazka == null) {
+         return(
+           <div className="commentBox">
+              Máš nejakú chybu v databáze
+           </div>
+         )
+       }
+       var changeState = this.changeState
+       var reccomendThis = this.reccomendThis
+       var options = otazka.moznosti.map(function (option, i){
+         return(<Answer key={i} database={data} current={option} next={changeState} reccomend={reccomendThis}>{option.moznost}</Answer>)
+       })
+       var result = null;
+       if (this.state.reccomend) {
+         result = <div className="commentBox">
+           <Reccomend>{this.state.reccomend}</Reccomend>
+         </div>
+       } else {
+         result = <div className="commentBox">
+           <h2>{otazka.otazka}</h2>
+           {options}
+         </div>
+       }
+       return (
+         <div className="mui-container-fluid">
+           <div className="mui-row">
+             <div className="mui-col-sm-10 mui-col-sm-offset-1">
+             <h1>{nazov}</h1>
+             <div className="mui-panel">
+               <div className="mui-row">
+                 <div className="mui-col-sm-12">
+          {result}
+          <br/>
+          <br/>
+          <br/>
+          <a href="index.html">Chcem začať od začiatku</a>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+       );
+     }
+   });
+   ReactDOM.render(
+     <QueryMe databaza={databaza} query={1}/>,
+     document.getElementById('content')
+   );
+   </script>
+</body>
+</html>
